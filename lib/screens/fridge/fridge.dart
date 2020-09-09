@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Fridge extends StatefulWidget {
+
   @override
   _FridgeState createState() => _FridgeState();
 }
@@ -15,13 +16,16 @@ class _FridgeState extends State<Fridge> {
   String savedIngredient;
 
   DBHelper db;
-
+  Future<List<IngredientSql>> futureIng;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       db = Provider.of<DBHelper>(context, listen: false);
+      setState(() {
+        futureIng = db.getIngredients();
+      });
     });
   }
 
@@ -70,8 +74,7 @@ class _FridgeState extends State<Fridge> {
                       if (savedIngredient.isEmpty) {
                         Scaffold.of(context).showSnackBar(SnackBar(content: Text('Please enter some text')));
                       } else {
-
-                        db.insertIngredient(IngredientSql());
+                        insertIngredient(savedIngredient);
                       }
                     },
                     shape: new RoundedRectangleBorder(
@@ -82,10 +85,45 @@ class _FridgeState extends State<Fridge> {
 
               SizedBox(height:40),
 
+              getFridgeList(),
+
             ],
           ),
         )
       )
     );
+  }
+
+  Widget getFridgeList() {
+    if (futureIng == null) {
+      return SizedBox();
+    } else {
+
+      return FutureBuilder<List<IngredientSql>>(
+        future: futureIng,
+        builder: (BuildContext context, AsyncSnapshot<List<IngredientSql>> snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            if (snapshot.data.isEmpty) {
+              return Text("No ingredients added yet :(");
+            }
+            return Text("data should be here");
+          } else {
+            return CircularProgressIndicator();
+          }
+        },
+      );
+
+    }
+  }
+
+  void insertIngredient(String savedIngredient) {
+    Future<bool> success = db.insertIngredient(IngredientSql(name: savedIngredient,));
+    success.then((success) {
+      if (success) {
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Added ingredient')));
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text('This ingredient is already added')));
+      }
+    });
   }
 }

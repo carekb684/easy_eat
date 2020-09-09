@@ -10,20 +10,38 @@ class DBHelper {
   static Future<Database> init() async {
     return openDatabase(
         join(await getDatabasesPath(), 'fridge_database.db'),
-    onCreate: (db, version) {
-    return db.execute(
-    "CREATE TABLE fridge(ingredient TEXT PRIMARY KEY, count INTEGER)",
+      onCreate: (db, version) {
+        return db.execute(
+        "CREATE TABLE fridge(name TEXT PRIMARY KEY, count INTEGER)",
     );
     },
+      onUpgrade: (db, oldVersion, newVersion) {
+        if (oldVersion < newVersion) {
+          db.execute("DROP TABLE IF EXISTS fridge");
+          db.execute("CREATE TABLE fridge(name TEXT PRIMARY KEY, count INTEGER)");
+        }
+      },
     // Set the version. This executes the onCreate function and provides a
     // path to perform database upgrades and downgrades.
-    version: 3,
+    version: 7,
     );
   }
 
-  void insertIngredient(IngredientSql ing) {
-    db.insert(IngredientSql.FRIDGE_TABLE, ing.toMap(), conflictAlgorithm: ConflictAlgorithm.fail);
+  Future<bool> insertIngredient(IngredientSql ing) async {
+    try {
+      var future = await db.insert(IngredientSql.FRIDGE_TABLE, ing.toMap(), conflictAlgorithm: ConflictAlgorithm.fail);
+    } catch(e) {
+      return false;
+    }
+    return true;
   }
 
-  Future<List<Ingr>>
+  Future<List<IngredientSql>> getIngredients() async {
+    List<Map<String, dynamic>> maps = await db.query(IngredientSql.FRIDGE_TABLE);
+
+    return List.generate(maps.length, (index) {
+      return IngredientSql(name: maps[index]["name"], count: maps[index]["count"]);
+    });
+  }
+
 }
