@@ -9,6 +9,7 @@ class DrawerMenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).primaryColor,
+     // color: Colors.yellow, //Theme.of(context).primaryColor,
       padding: const EdgeInsets.only(top: 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,8 +32,9 @@ class DrawerMenuWidget extends StatelessWidget {
           ),
           sliderItem('Home', Icons.home),
           sliderItem('Fridge', Icons.ac_unit),
-          sliderItem('Recipes', Icons.note),
-          sliderItem('Settings', Icons.settings),
+          sliderItem('What can I cook?', Icons.public),
+          sliderItem('Recipes', Icons.search),
+          //sliderItem('Settings', Icons.settings),
         ],
       ),
     );

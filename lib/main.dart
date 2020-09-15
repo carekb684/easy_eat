@@ -35,6 +35,7 @@ class _MyAppState extends State<MyApp> {
         ],
 
         child: MaterialApp(
+            debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
             accentColor: HexColor.fromHex("#ef5e2a"),

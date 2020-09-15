@@ -1,8 +1,6 @@
 class IngredientSql {
   IngredientSql({this.name, this.count});
 
-  static final String FRIDGE_TABLE = "fridge";
-
   String name;
   int count;
 
@@ -15,4 +13,21 @@ class IngredientSql {
     return map;
   }
 
+  IngredientWrapper toWrapper(){
+    return IngredientWrapper(ingredient: this);
+  }
+
+}
+
+class IngredientWrapper {
+  IngredientWrapper({this.ingredient});
+
+  IngredientSql ingredient;
+  bool hasChanged = false;
+
+  @override
+  bool operator ==(other) {
+    // TODO: implement ==
+    return this.ingredient.name == other.name;
+  }
 }
