@@ -43,7 +43,7 @@ class _RecipesState extends State<Recipes> {
               SizedBox(height: 20,),
 
               RecipeGrid(scrollable: false,),
-
+              SizedBox(height: 20,),
 
             ]),
           ),

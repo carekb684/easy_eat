@@ -1,3 +1,4 @@
+import 'package:easy_eat/drawer/search_drawer_right.dart';
 import 'package:easy_eat/drawer/slider_menu_custom.dart';
 import 'package:easy_eat/screens/fridge/fridge.dart';
 import 'package:easy_eat/screens/home/home.dart';
@@ -17,7 +18,7 @@ class SlideDrawer extends StatefulWidget {
 
 class _SlideDrawerState extends State<SlideDrawer> {
 
-  GlobalKey<SliderMenuContainerState> _key = new GlobalKey<SliderMenuContainerState>();
+  GlobalKey<SliderMenuCustomState> _key = new GlobalKey<SliderMenuCustomState>();
 
   String titleHeader = "Home";
 
@@ -30,10 +31,15 @@ class _SlideDrawerState extends State<SlideDrawer> {
 
           child: SafeArea(
             child: SliderMenuCustom(
-              barColor: Theme.of(context).primaryColor,
-              //barColor: Colors.blue, //Theme.of(context).primaryColor,
+              appBarColor: Theme.of(context).primaryColor,
               key: _key,
-
+              twoDrawers: titleHeader == "Recipes" ? true : false,
+              sliderMenu2: titleHeader == "Recipes" ? DrawerSearchMenu(onItemClick: null,) : null,
+              drawerIconColor: Colors.white,
+              appBarPadding: const EdgeInsets.only(top: 10),
+              sliderMenuOpenOffset: 210,
+              sliderMenu2OpenOffset: 280,
+              appBarHeight: 60,
               title: Text(
                 titleHeader,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
