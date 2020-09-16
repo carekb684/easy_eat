@@ -6,6 +6,7 @@ import 'package:easy_eat/screens/ingredient_recipe_search/ingredient_recipe_sear
 import 'package:easy_eat/screens/recipes_search/recipes_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
+import 'package:provider/provider.dart';
 
 import 'drawer_menu.dart';
 
@@ -19,6 +20,8 @@ class SlideDrawer extends StatefulWidget {
 class _SlideDrawerState extends State<SlideDrawer> {
 
   GlobalKey<SliderMenuCustomState> _key = new GlobalKey<SliderMenuCustomState>();
+
+  GlobalKey<DrawerSearchMenuState> _drawerSearchkey = new GlobalKey<DrawerSearchMenuState>();
 
   String titleHeader = "Home";
 
@@ -34,7 +37,7 @@ class _SlideDrawerState extends State<SlideDrawer> {
               appBarColor: Theme.of(context).primaryColor,
               key: _key,
               twoDrawers: titleHeader == "Recipes" ? true : false,
-              sliderMenu2: titleHeader == "Recipes" ? DrawerSearchMenu(onItemClick: null,) : null,
+              sliderMenu2: titleHeader == "Recipes" ? DrawerSearchMenu(key: _drawerSearchkey,) : null,
               drawerIconColor: Colors.white,
               appBarPadding: const EdgeInsets.only(top: 10),
               sliderMenuOpenOffset: 210,
@@ -65,7 +68,11 @@ class _SlideDrawerState extends State<SlideDrawer> {
     switch(titleHeader) {
       case "Home": { page=Home(); break;}
       case "Fridge": { page=Fridge(); break;}
-      case "Recipes": { page=Recipes(); break;}
+      case "Recipes": {
+        page=Provider<GlobalKey<DrawerSearchMenuState>>(
+          create: (_) => _drawerSearchkey,
+          child: Recipes()); break;
+      }
       case "What can I cook?": { page=IngredientRecipes(); break;}
       default: { page=Home(); break;}
     }

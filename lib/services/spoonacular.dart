@@ -23,6 +23,10 @@ class SpoonService {
   final String PARAM_IGNORE_PANTRY = "&ignorePantry=";
   final String PARAM_QUERY = "&query=";
   final String PARAM_SORT = "&sort=";
+  final String PARAM_TYPE = "&type=";
+  final String PARAM_DIET = "&diet=";
+  final String PARAM_INTOLERANCES = "&intolerances=";
+  final String PARAM_SORT_DIR = "&sortDirection=";
 
   Client httpClient = Client();
 
@@ -50,13 +54,24 @@ class SpoonService {
     return Future.value(recipe);
   }
 
-  Future<List<ThinRecipe>> fullSearch(String query, int recipeCount) async{
+  Future<List<ThinRecipe>> fullSearch(String query, String type, String diet, String sort, String intol, int recipeCount) async{
+    String param_sort = getSortParams(sort);
     Response resp = await httpClient.get(
         BASE_URL + RECIPES_URL + SEARCH_URL + PARAM_KEY + PARAM_NUMBER + recipeCount.toString() +
-            PARAM_QUERY + query + PARAM_SORT + "popularity"
+            PARAM_QUERY + query + param_sort + PARAM_TYPE + type + PARAM_DIET + diet + PARAM_INTOLERANCES + intol
     );
     List<ThinRecipe> recipes = SpoonSerializer.seralizeSearchRecipe(resp);
     return Future.value(recipes);
+  }
+
+  String getSortParams(String sort) {
+    if (sort.isEmpty) {
+      return sort;
+    } else if (sort == "popularity" || sort == "healthiness") {
+      return PARAM_SORT + sort + PARAM_SORT_DIR + "desc";
+    } else if (sort == "time") {
+      return PARAM_SORT + sort + PARAM_SORT_DIR + "asc";
+    }
   }
 
 }

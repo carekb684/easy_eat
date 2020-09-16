@@ -87,6 +87,7 @@ class _FridgeState extends State<Fridge> {
               ),
               SizedBox(height: 40),
               getFridgeList(),
+              SizedBox(height: 20,),
             ],
           ),
         )

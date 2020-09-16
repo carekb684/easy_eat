@@ -1,4 +1,5 @@
 import 'package:easy_eat/animations/fade_animation.dart';
+import 'package:easy_eat/drawer/search_drawer_right.dart';
 import 'package:easy_eat/models/sql/ingridient_model.dart';
 import 'package:easy_eat/models/thin_recipe.dart';
 import 'package:easy_eat/screens/home/recipe_scroll_grid.dart';
@@ -18,6 +19,8 @@ class _RecipesState extends State<Recipes> {
   SpoonService spoonServ;
   Future<List<ThinRecipe>> recipes;
 
+  GlobalKey<DrawerSearchMenuState> drawerSearchKey;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +30,7 @@ class _RecipesState extends State<Recipes> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     spoonServ = Provider.of<SpoonService>(context, listen: false);
+    drawerSearchKey = Provider.of<GlobalKey<DrawerSearchMenuState>>(context, listen: false);
   }
 
   @override
@@ -104,7 +108,11 @@ class _RecipesState extends State<Recipes> {
                           if (value.isEmpty) {
                             Scaffold.of(context).showSnackBar(SnackBar(content: Text("Please enter some text before searching."),));
                           } else {
-                            //searchRecipes(value);
+                            String diet = drawerSearchKey.currentState.diet;
+                            String type = drawerSearchKey.currentState.type;
+                            var intolerances = drawerSearchKey.currentState.intolerances;
+                            String sorting = drawerSearchKey.currentState.sorting;
+                            //searchRecipes(value, diet, type, sorting, intolerances);
                           }
 
                         },
@@ -118,10 +126,17 @@ class _RecipesState extends State<Recipes> {
     );
   }
 
-  void searchRecipes(String value) {
-    setState(() {
-      recipes = spoonServ.fullSearch(value, 2);
+  void searchRecipes(String value, String diet, String type, String sort, Map<String, bool> intolerances) {
+    List<String> intolList = [];
+    intolerances.forEach((key, value) {
+      if (value) intolList.add(key);
     });
+    String intolStr = intolList.join(" ");
+
+    setState(() {
+      recipes = spoonServ.fullSearch(value, type, diet, sort, intolStr, 2);
+    });
+
   }
 
 
