@@ -5,18 +5,23 @@ import 'package:flutter/rendering.dart';
 class HeroHeader implements SliverPersistentHeaderDelegate {
 
   HeroHeader({
+    this.isFavourite,
     this.heroText,
     this.heroSubText,
     this.minExtent,
     this.maxExtent,
     this.imgUrl,
+    this.favouriteMethod,
   });
+
+  Function favouriteMethod;
 
   double maxExtent;
   double minExtent;
   String heroText;
   String heroSubText;
   String imgUrl;
+  bool isFavourite;
 
   @override
   Widget build(
@@ -76,6 +81,23 @@ class HeroHeader implements SliverPersistentHeaderDelegate {
             style: TextStyle(fontSize: 12.0, color: Colors.white),
           ),
         ),
+
+        Positioned(
+          right: 10,
+          top: 10,
+          child: SafeArea(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: IconButton(
+                icon: getFavouriteStar(),
+                onPressed: favouriteMethod,
+              )
+            ),
+          )
+        )
       ],
     );
   }
@@ -91,4 +113,12 @@ class HeroHeader implements SliverPersistentHeaderDelegate {
   @override
   OverScrollHeaderStretchConfiguration get stretchConfiguration =>
       OverScrollHeaderStretchConfiguration();
+
+  Widget getFavouriteStar() {
+
+    if (isFavourite != null && isFavourite) {
+      return Icon(Icons.star, color: Colors.yellow[600], size: 30,);
+    }
+    return Icon(Icons.star_border, color: Colors.black, size: 30);
+  }
 }

@@ -29,28 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
 
-    return MultiProvider(
-        providers: [
-          Provider<SpoonService>( create: (_) => SpoonService()),
-        ],
-
-        child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            accentColor: HexColor.fromHex("#ef5e2a"),
-            primaryColor: HexColor.fromHex("#ef5e2a"), // usage color: Theme.of(context).
-            primaryColorDark: HexColor.fromHex("#b52b00"),
-            primaryColorLight: HexColor.fromHex("#ff8f57"),
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
-          home: LoadDbThenShowPage(context),
-            routes: {
-              //"/profile": (context) => MyProfile(),
-              "/screens.home": (context) => SlideDrawer(),
-            }
-        ),
-      );
+    return LoadDbThenShowPage(context);
   }
 
   getDB() async {
@@ -65,13 +44,35 @@ class _MyAppState extends State<MyApp> {
 
   Widget LoadDbThenShowPage(BuildContext context) {
     if (dbHelper == null) {
-      return Scaffold(
-        backgroundColor: HexColor.fromHex("#ef5e2a"),
+      return Container(
+        color: HexColor.fromHex("#ef5e2a"),
       );
     } else {
-      return Provider<DBHelper>( create: (_) => dbHelper,
-          child: SlideDrawer());
+      return MultiProvider(
+        providers: [
+          Provider<SpoonService>( create: (_) => SpoonService()),
+          Provider<DBHelper>( create: (_) => dbHelper),
+        ],
+
+        child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              accentColor: HexColor.fromHex("#ef5e2a"),
+              primaryColor: HexColor.fromHex("#ef5e2a"), // usage color: Theme.of(context).
+              primaryColorDark: HexColor.fromHex("#b52b00"),
+              primaryColorLight: HexColor.fromHex("#ff8f57"),
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+            home: SlideDrawer(),
+            routes: {
+              //"/profile": (context) => MyProfile(),
+              "/screens.home": (context) => SlideDrawer(),
+            }
+        ),
+      );
     }
+
   }
 }
 

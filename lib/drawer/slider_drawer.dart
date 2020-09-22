@@ -1,5 +1,6 @@
 import 'package:easy_eat/drawer/search_drawer_right.dart';
 import 'package:easy_eat/drawer/slider_menu_custom.dart';
+import 'package:easy_eat/screens/favorite/favorites.dart';
 import 'package:easy_eat/screens/fridge/fridge.dart';
 import 'package:easy_eat/screens/home/home.dart';
 import 'package:easy_eat/screens/ingredient_recipe_search/ingredient_recipe_search.dart';
@@ -67,6 +68,7 @@ class _SlideDrawerState extends State<SlideDrawer> {
     Widget page;
     switch(titleHeader) {
       case "Home": { page=Home(); break;}
+      case "Favorites": { page=Favorites(); break;}
       case "Fridge": { page=Fridge(); break;}
       case "Recipes": {
         page=Provider<GlobalKey<DrawerSearchMenuState>>(

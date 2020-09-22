@@ -1,5 +1,6 @@
 import 'package:easy_eat/models/detail_recipe_model.dart';
 import 'package:easy_eat/models/thin_recipe.dart';
+import 'package:easy_eat/services/db_helper.dart';
 import 'package:easy_eat/services/spoonacular.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,9 @@ class _RecipeDetailState extends State<RecipeDetail> {
   }
   DetailRecipeModel asd;
 
+  DBHelper db;
+  bool isFavourite;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +57,13 @@ class _RecipeDetailState extends State<RecipeDetail> {
     super.didChangeDependencies();
     spoonService = Provider.of<SpoonService>(context, listen: false);
     //recipe = spoonService.getRecipe(widget.thinRecipe.id);
+
+    db = Provider.of<DBHelper>(context, listen: false);
+    db.getFavorites().then((value) {
+      setState(() {
+        isFavourite = value.contains(widget.thinRecipe.id);
+      });
+    });
   }
 
   @override
@@ -64,11 +75,13 @@ class _RecipeDetailState extends State<RecipeDetail> {
           SliverPersistentHeader(
             pinned:true,
             delegate: HeroHeader(
+              isFavourite: isFavourite,
               imgUrl: widget.thinRecipe.imgUrl,
               heroText: widget.thinRecipe.name,
               minExtent: 150.0,
               maxExtent: 250.0,
               heroSubText: heroSubText,
+              favouriteMethod: changeFavourite,
             ),
           ),
 
@@ -151,5 +164,21 @@ class _RecipeDetailState extends State<RecipeDetail> {
   double getRating(double spoonScore) {
     double score = (spoonScore / 10) / 2;
     return score;
+  }
+
+  changeFavourite() {
+      if (isFavourite) {
+        db.deleteFavorite(widget.thinRecipe.id).then((value){
+          setState(() {
+            isFavourite = false;
+          });
+        });
+      } else {
+        db.insertFavorite(widget.thinRecipe.id).then((value) {
+          setState(() {
+            isFavourite = true;
+          });
+        });
+      }
   }
 }

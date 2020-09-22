@@ -19,7 +19,7 @@ class DrawerMenuWidget extends StatelessWidget {
           ),
           Icon(Icons.fastfood, color: Colors.white,),
           Text(
-            'easyEat',
+            'EasyEat',
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -33,6 +33,7 @@ class DrawerMenuWidget extends StatelessWidget {
           sliderItem('Fridge', Icons.ac_unit),
           sliderItem('What can I cook?', Icons.public),
           sliderItem('Recipes', Icons.search),
+          sliderItem('Favorites', Icons.star),
           //sliderItem('Settings', Icons.settings),
         ],
       ),
