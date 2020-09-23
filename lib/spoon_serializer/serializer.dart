@@ -29,7 +29,7 @@ class SpoonSerializer {
     for (dynamic rec in list) {
       ThinRecipe recipe = ThinRecipe();
       recipe.name = rec["title"];
-      recipe.id = rec["id"];
+      recipe.id = rec["id"].toString();
       recipe.imgUrl = rec["image"];
       recipes.add(recipe);
     }
@@ -37,15 +37,17 @@ class SpoonSerializer {
     return recipes;
   }
 
-  static DetailRecipeModel seralizeDetailRecipe(Response resp) {
-    Map<String, dynamic> recipeMap = jsonDecode(resp.body);
+  static DetailRecipeModel seralizeDetailRecipe(Map<String, dynamic> recipeMap) {
 
     DetailRecipeModel recipe = DetailRecipeModel();
 
+    recipe.id = recipeMap["id"].toString();
+    recipe.name = recipeMap["title"];
+    recipe.imgUrl = recipeMap["image"];
     recipe.instructions = recipeMap["instructions"];
     recipe.summary = recipeMap["summary"];
-    recipe.servings = recipeMap["servings"];
-    recipe.readyInMinutes = recipeMap["readyInMinutes"];
+    recipe.servings = recipeMap["servings"].toString();
+    recipe.readyInMinutes = recipeMap["readyInMinutes"].toString();
     recipe.spoonScore = recipeMap["spoonacularScore"];
 
     List<String> ingredNames = [];
@@ -56,6 +58,16 @@ class SpoonSerializer {
     recipe.ingredients = ingredNames;
 
     return recipe;
+  }
+
+  static List<DetailRecipeModel> seralizeListDetailRecipe(Response resp) {
+    List<dynamic> list = jsonDecode(resp.body);
+
+    List<DetailRecipeModel> listDetails = [];
+    for (dynamic entry in list) {
+      listDetails.add(seralizeDetailRecipe(entry));
+    }
+    return listDetails;
   }
 
 }

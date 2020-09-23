@@ -23,18 +23,19 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      spoonServ = Provider.of<SpoonService>(context, listen: false);
-      //randomRecipes = spoonServ.getRandomRecipes(5);
-    });
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    spoonServ = Provider.of<SpoonService>(context, listen: false);
+    randomRecipes = spoonServ.getRandomRecipes(7);
   }
   
   @override
   Widget build(BuildContext context) {
     return Container(
         color: Theme.of(context).primaryColor,
-        //color: Colors.green,//Theme.of(context).primaryColor,
         padding: EdgeInsets.only(left: 20, right: 20),
         child: ListView(
           children: [
@@ -43,34 +44,39 @@ class _HomeState extends State<Home> {
             getHeaderImage(),
             SizedBox(height: 20,),
 
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: double.infinity),
-               // child: FutureBuilder<List<Recipe>>(
-                  //future: randomRecipes,
-                  //builder: (BuildContext context, AsyncSnapshot<List<Recipe>> snapshot) {
-                   // if (snapshot.hasData && snapshot.data != null) {
-                      child: RecipeGrid(scrollable: false,),
-                      //return getGrid(snapshot.data);
-                    //} else {
-                    //  return CircularProgressIndicator();
-                   // }
-                 // },
-                //),
-            ),
 
-            SizedBox(height: 20,),
-/*
-            FutureBuilder<List<Recipe>>(
+
+            FutureBuilder<List<ThinRecipe>>(
               future: randomRecipes,
-              builder: (BuildContext context, AsyncSnapshot<List<Recipe>> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<List<ThinRecipe>> snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  return Text("test");
+                  if (snapshot.data.isEmpty) {
+                    return Text(
+                      "No recipes found :(",
+                      style: TextStyle(color: Colors.white),
+                    );
+                  }
+
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: double.infinity),
+                    child: RecipeGrid(scrollable: false, thinRecipes: snapshot.data),
+                  );
+
                 } else {
                   return CircularProgressIndicator();
                 }
               },
             ),
-            */
+
+            /*
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: double.infinity),
+              child: RecipeGrid(scrollable: false,),
+            ),
+
+             */
+
+            SizedBox(height: 20,),
           ],
         ),
 

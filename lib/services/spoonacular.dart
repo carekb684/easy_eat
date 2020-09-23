@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:easy_eat/models/detail_recipe_model.dart';
 import 'package:easy_eat/models/thin_recipe.dart';
 import 'package:easy_eat/spoon_serializer/serializer.dart';
@@ -14,6 +16,7 @@ class SpoonService {
   final String INGREDIENTS_URL = "/findByIngredients";
   final String SEARCH_URL = "/complexSearch";
   final String INFORMATION_URL = "/information";
+  final String INFORMATION_BULK_URL = "/informationBulk";
 
   final String PARAM_KEY = "?apiKey=" + "68889d6d630b432a8e1f3a57db1b32cc";
 
@@ -27,6 +30,7 @@ class SpoonService {
   final String PARAM_DIET = "&diet=";
   final String PARAM_INTOLERANCES = "&intolerances=";
   final String PARAM_SORT_DIR = "&sortDirection=";
+  final String PARAM_IDS = "&ids=";
 
   Client httpClient = Client();
 
@@ -50,8 +54,16 @@ class SpoonService {
   Future<DetailRecipeModel> getRecipe(String id) async {
     Response resp = await httpClient.get(
         BASE_URL + RECIPES_URL + "/$id" + INFORMATION_URL + PARAM_KEY);
-    DetailRecipeModel recipe = SpoonSerializer.seralizeDetailRecipe(resp);
+    DetailRecipeModel recipe = SpoonSerializer.seralizeDetailRecipe(jsonDecode(resp.body));
     return Future.value(recipe);
+  }
+
+  //ids = comma seperated
+  Future<List<DetailRecipeModel>> getRecipesBulk(String ids) async {
+    Response resp = await httpClient.get(
+        BASE_URL + RECIPES_URL + INFORMATION_BULK_URL + PARAM_KEY + PARAM_IDS + ids);
+    List<DetailRecipeModel> recipes = SpoonSerializer.seralizeListDetailRecipe(resp);
+    return Future.value(recipes);
   }
 
   Future<List<ThinRecipe>> fullSearch(String query, String type, String diet, String sort, String intol, int recipeCount) async{

@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
 class IngredientRecipes extends StatefulWidget {
-  static final int recipeCount = 2;
+  static final int recipeCount = 5;
 
   @override
   _IngredientRecipesState createState() => _IngredientRecipesState();
@@ -118,7 +118,7 @@ class _IngredientRecipesState extends State<IngredientRecipes> {
                       elevation: 0,
                       label: Text("Search recipes"),
                       onPressed: () {
-                        //searchRecipes();
+                        searchRecipes();
                       },
                       shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -129,9 +129,9 @@ class _IngredientRecipesState extends State<IngredientRecipes> {
               ]),
               SizedBox(height: 20),
 
-              /*FutureBuilder<List<Recipe>>(
+              FutureBuilder<List<ThinRecipe>>(
                 future: recipes,
-                builder: (BuildContext context, AsyncSnapshot<List<Recipe>> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<ThinRecipe>> snapshot) {
                   if (snapshot.hasData && snapshot.data != null) {
                     if (snapshot.data.isEmpty) {
                       return Text(
@@ -139,19 +139,19 @@ class _IngredientRecipesState extends State<IngredientRecipes> {
                         style: TextStyle(color: Colors.white),
                       );
                     }
-*/
-            ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: double.infinity),
-                child: RecipeGrid(scrollable: false,),
-            ),
 
-                  /*} else {
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: double.infinity),
+                    child: RecipeGrid(scrollable: false, thinRecipes: snapshot.data),
+                  );
+
+
+                  } else {
                     return CircularProgressIndicator();
                   }
                 },
               ),
 
-                   */
                   SizedBox(height: 10,),
             ]),
           ),

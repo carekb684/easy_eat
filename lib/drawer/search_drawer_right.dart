@@ -34,52 +34,68 @@ class DrawerSearchMenuState extends State<DrawerSearchMenu> {
   List<DropdownMenuItem<String>> typeList;
   String type = "";
 
+  String test = "test";
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).primaryColor,
       padding: const EdgeInsets.only(top: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
 
-          Align(alignment: Alignment.center,
-              child: Text('Filters', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20,),)),
-          SizedBox(height: 30,),
+            Align(alignment: Alignment.center,
+                child: Text('Filters', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20,),)),
+            SizedBox(height: 30,),
 
-          Text("Sorting",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(height:10),
-          getDropDown(sortList, sorting),
+            Text("Sorting",
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            SizedBox(height:10),
+            getDropDown(sortList, sorting, (value) {
+              setState(() {
+                sorting = value;
+              });
+            }),
 
-          SizedBox(height: 30,),
+            SizedBox(height: 30,),
 
-          Text("Type",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(height:10),
-          getDropDown(typeList, type),
+            Text("Type",
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            SizedBox(height:10),
+            getDropDown(typeList, type, (value) {
+              setState(() {
+                type = value;
+              });
+            }),
 
-          SizedBox(height: 30,),
+            SizedBox(height: 30,),
 
-          Text("Diet",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(height:10),
-          getDropDown(dietList, diet),
+            Text("Diet",
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            SizedBox(height:10),
+            getDropDown(dietList, diet, (value) {
+              setState(() {
+                diet = value;
+              });
+            }),
 
-          SizedBox(height: 30),
-          Text("Intolerances",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          getCheckboxGrid(intolerances),
+            SizedBox(height: 30),
+            Text("Intolerances",
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            getCheckboxGrid(intolerances),
 
 
 
-          SizedBox(height: 15),
+            SizedBox(height: 15),
 
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -126,7 +142,7 @@ class DrawerSearchMenuState extends State<DrawerSearchMenu> {
     return list;
   }
 
-  Widget getDropDown(List<DropdownMenuItem<String>> list, String selection) {
+  Widget getDropDown(List<DropdownMenuItem<String>> list, String selection, Function setValue) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -138,11 +154,7 @@ class DrawerSearchMenuState extends State<DrawerSearchMenu> {
           child: DropdownButton<String>(
             iconEnabledColor: Colors.black,
             value: selection,
-            onChanged: (value) {
-              setState(() {
-                selection = value;
-              });
-            },
+            onChanged: setValue,
             items: list,
           ),
         ),

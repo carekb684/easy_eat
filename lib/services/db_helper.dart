@@ -38,8 +38,6 @@ class DBHelper {
   Future<List<String>> getFavorites() async {
     List<Map<String, dynamic>> maps = await db.query(FAVORITES_TABLE);
 
-    //List<int> favourites = [];
-    //maps.map((e) => favourites.add(e["recipeId"]));
     return List.generate(maps.length, (index) {
       return maps[index]["recipeId"];
     });

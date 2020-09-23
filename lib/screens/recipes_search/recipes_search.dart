@@ -46,7 +46,29 @@ class _RecipesState extends State<Recipes> {
               getHeader(),
               SizedBox(height: 20,),
 
-              RecipeGrid(scrollable: false,),
+              FutureBuilder<List<ThinRecipe>>(
+                future: recipes,
+                builder: (BuildContext context, AsyncSnapshot<List<ThinRecipe>> snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    if (snapshot.data.isEmpty) {
+                      return Text(
+                        "No recipes found :(",
+                        style: TextStyle(color: Colors.white),
+                      );
+                    }
+
+                    return ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: double.infinity),
+                      child: RecipeGrid(scrollable: false, thinRecipes: snapshot.data),
+                    );
+
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
+              ),
+
+
               SizedBox(height: 20,),
 
             ]),
@@ -61,7 +83,7 @@ class _RecipesState extends State<Recipes> {
       height: 300,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        image: DecorationImage(image: AssetImage('assets/images/food_home_header.jpg'),
+        image: DecorationImage(image: AssetImage('assets/images/food_recipes_header.jpg'),
             fit: BoxFit.cover),
       ),
       child: Container(
@@ -112,7 +134,7 @@ class _RecipesState extends State<Recipes> {
                             String type = drawerSearchKey.currentState.type;
                             var intolerances = drawerSearchKey.currentState.intolerances;
                             String sorting = drawerSearchKey.currentState.sorting;
-                            //searchRecipes(value, diet, type, sorting, intolerances);
+                            searchRecipes(value, diet, type, sorting, intolerances);
                           }
 
                         },
@@ -131,10 +153,10 @@ class _RecipesState extends State<Recipes> {
     intolerances.forEach((key, value) {
       if (value) intolList.add(key);
     });
-    String intolStr = intolList.join(" ");
+    String intolStr = intolList.join(",");
 
     setState(() {
-      recipes = spoonServ.fullSearch(value, type, diet, sort, intolStr, 2);
+      recipes = spoonServ.fullSearch(value, type, diet, sort, intolStr, 6);
     });
 
   }

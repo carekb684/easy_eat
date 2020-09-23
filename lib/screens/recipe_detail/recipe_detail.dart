@@ -12,8 +12,9 @@ import 'hero_header.dart';
 
 class RecipeDetail extends StatefulWidget {
 
-  RecipeDetail({this.thinRecipe});
+  RecipeDetail({this.thinRecipe, this.detailRecipe});
   ThinRecipe thinRecipe;
+  DetailRecipeModel detailRecipe;
 
   @override
   _RecipeDetailState createState() => _RecipeDetailState();
@@ -22,27 +23,22 @@ class RecipeDetail extends StatefulWidget {
 class _RecipeDetailState extends State<RecipeDetail> {
 
   SpoonService spoonService;
-  Future<DetailRecipeModel> recipe;
   String heroSubText = "5.0 servings in 45 minutes";
 
   _RecipeDetailState() {
-    asd = DetailRecipeModel();
-    asd.spoonScore = 37.0;
-    asd.servings = "6";
-    asd.servings = "6";
-    asd.readyInMinutes = "45";
-    asd.instructions = "<ol><li>Take a large bowl mix in the ginger and garlic paste, yogurt, red chilly powder, turmeric powder, and salt.</li><li>Mix well to from smooth and thick paste, add the chicken pieces to the masala paste and  marinaded for 4 hours.</li><li>Heat enough oil in a pan to deep fry the marinaded chicken pieces. Deep fry the chicken pieces in batches till crisp and golden color.</li><li>Note: The taste of the Chicken 65 depends mainly on the amount of time it gets marinated in the masala, it is best to marinate the chicken pieces the day before.</li></ol>";
-    asd.summary = "Need a <b>gluten free hor d'oeuvre</b>? Chicken 65 could be a super recipe to try. This recipe makes 6 servings with <b>113 calories</b>, <b>18g of protein</b>, and <b>3g of fat</b> each. For <b>\$1.03 per serving</b>, this recipe <b>covers 10%</b> of your daily requirements of vitamins and minerals. Only a few people made this recipe, and 5 would say it hit the spot. Head to the store and pick up yogurt, chili powder, salt, and a few other things to make it today. From preparation to the plate, this recipe takes roughly <b>45 minutes</b>. All things considered, we decided this recipe <b>deserves a spoonacular score of 40%</b>. This score is solid. Try <a href=\"https://spoonacular.com/recipes/i-aint-chicken-chicken-crispy-roasted-chicken-breasts-with-orange-and-cardamom-310658\">I Ain't Chicken Chicken: Crispy Roasted Chicken Breasts with Orange and Cardamom</a>, <a href=\"https://spoonacular.com/recipes/the-best-shredded-chicken-for-your-chicken-dishes-+-homemade-chicken-broth-528123\">The Best Shredded Chicken For Your Chicken Dishes + Homemade Chicken Broth</a>, and <a href=\"https://spoonacular.com/recipes/popeye-tsos-chicken-general-tsos-chicken-made-with-popeyes-chicken-nuggets-196521\">Popeye Tso's Chicken (General Tso's Chicken Made with Popeye's Chicken Nuggets)</a> for similar recipes.";
-    asd.ingredients = [
-      "500 grams boneless chicken breast",
-      "2-3 tsp chili powder",
-      "4 tbsp Ginger and Garlic paste",
-      "½ tbsp. salt",
-      "1/4 tsp Turmeric powder",
-      "4 tbsp yogurt",
-    ];
+    recipe = DetailRecipeModel();
+    recipe.spoonScore = 0;
+    recipe.servings = "";
+    recipe.id = "";
+    recipe.name = "";
+    recipe.imgUrl = "";
+    recipe.readyInMinutes = "";
+    recipe.instructions = "";
+    recipe.summary = "";
+    recipe.ingredients = [];
+
   }
-  DetailRecipeModel asd;
+  DetailRecipeModel recipe;
 
   DBHelper db;
   bool isFavourite;
@@ -56,7 +52,17 @@ class _RecipeDetailState extends State<RecipeDetail> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     spoonService = Provider.of<SpoonService>(context, listen: false);
-    //recipe = spoonService.getRecipe(widget.thinRecipe.id);
+
+    if (widget.detailRecipe == null) {
+      spoonService.getRecipe(widget.thinRecipe.id).then((value) {
+        setState(() {
+          recipe = value;
+        });
+      });
+    } else {
+      recipe = widget.detailRecipe;
+    }
+
 
     db = Provider.of<DBHelper>(context, listen: false);
     db.getFavorites().then((value) {
@@ -78,27 +84,12 @@ class _RecipeDetailState extends State<RecipeDetail> {
               isFavourite: isFavourite,
               imgUrl: widget.thinRecipe.imgUrl,
               heroText: widget.thinRecipe.name,
-              minExtent: 150.0,
+              minExtent: 190.0,
               maxExtent: 250.0,
-              heroSubText: heroSubText,
+              heroSubText: getHeroSubText(),
               favouriteMethod: changeFavourite,
             ),
           ),
-
-          /*
-          SliverToBoxAdapter(
-            child: FutureBuilder<DetailRecipeModel>(
-              future: recipe,
-              builder: (BuildContext context, AsyncSnapshot<DetailRecipeModel> snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  return Text("data");
-                }
-                return CircularProgressIndicator();
-
-              }
-            ),
-
-          ),*/
 
           SliverToBoxAdapter(
 
@@ -107,14 +98,14 @@ class _RecipeDetailState extends State<RecipeDetail> {
                   SizedBox(height: 20),
                   RatingBarIndicator(
                     unratedColor: Colors.white,
-                    rating: getRating(asd.spoonScore),
+                    rating: getRating(recipe.spoonScore),
                     itemCount: 5,
                     itemBuilder: (context, index) =>Icon(Icons.fastfood, color: Colors.yellow,),
                   ),
                   SizedBox(height: 20),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 40),
-                    child: HtmlWidget(fitSummary(asd.summary),textStyle: TextStyle(color: Colors.white),),
+                    child: HtmlWidget(fitSummary(recipe.summary),textStyle: TextStyle(color: Colors.white),),
                   ),
                   SizedBox(height:30),
 
@@ -128,10 +119,8 @@ class _RecipeDetailState extends State<RecipeDetail> {
 
                   Text("Instructions", style: TextStyle(fontSize: 25, color: Colors.white,)),
                   SizedBox(height: 20,),
-                  Container(
-                    margin: EdgeInsets.only(right: 40),
-                    child: HtmlWidget(fitInstructions(asd.instructions) ,textStyle: TextStyle(color: Colors.white),),
-                  ),
+                  getInstructions(recipe.instructions),
+
 
                   SizedBox(height: 20,),
                 ],
@@ -145,20 +134,34 @@ class _RecipeDetailState extends State<RecipeDetail> {
 
   // removes the suggestion links
   String fitSummary(String summary) {
-    return summary.substring(0,summary.indexOf("Try "));
+    int index = summary.indexOf("Try ");
+    if (index > 10) {
+      return summary.substring(0, index);
+    }
+    return summary;
   }
 
   Widget getIngredListTiles() {
     List<Widget> list = [];
-    for (String ingred in asd.ingredients) {
+    for (String ingred in recipe.ingredients) {
       list.add(ListTile(
           title: Text("•  " + ingred, style: TextStyle(color: Colors.white),)));
     }
     return Column(children:list);
   }
 
-  String fitInstructions(String instructions) {
-    return instructions.replaceAll("</li>", "</li><br>");
+  Widget getInstructions(String instructions) {
+    if (instructions.contains("<li>")) {
+      instructions = instructions == null ? "" : instructions.replaceAll("</li>", "</li><br>");
+
+      return Container(
+        margin: EdgeInsets.only(right: 40),
+        child: HtmlWidget( instructions,textStyle: TextStyle(color: Colors.white),),);
+    }
+    return Container(
+      margin: EdgeInsets.only(left: 40, right: 40),
+      child: HtmlWidget( instructions,textStyle: TextStyle(color: Colors.white),),);
+
   }
 
   double getRating(double spoonScore) {
@@ -166,7 +169,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
     return score;
   }
 
-  changeFavourite() {
+  void changeFavourite() {
       if (isFavourite) {
         db.deleteFavorite(widget.thinRecipe.id).then((value){
           setState(() {
@@ -180,5 +183,14 @@ class _RecipeDetailState extends State<RecipeDetail> {
           });
         });
       }
+  }
+
+  String getHeroSubText() {
+    var servings = recipe.servings;
+    var readyInMinutes = recipe.readyInMinutes;
+
+    if(servings.isEmpty || readyInMinutes.isEmpty) return "";
+
+    return servings + " servings in " + readyInMinutes + " minutes";
   }
 }
