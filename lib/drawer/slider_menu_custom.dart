@@ -98,12 +98,10 @@ class SliderMenuCustomState extends State<SliderMenuCustom>
   /// Open drawer
   void openDrawer() {
     setState(() {
+      sliderOpen = SliderOpen.LEFT_TO_RIGHT;
       _animationController.forward();
-      if (sliderOpen == SliderOpen.LEFT_TO_RIGHT) {
-        _slideBarXOffset = widget.sliderMenuOpenOffset;
-      } else if (sliderOpen == SliderOpen.RIGHT_TO_LEFT) {
-        _slideBarXOffset = widget.sliderMenu2OpenOffset;
-      }
+      _slideBarXOffset = widget.sliderMenuOpenOffset;
+
       _isSlideBarOpen = true;
     });
   }
@@ -121,6 +119,28 @@ class SliderMenuCustomState extends State<SliderMenuCustom>
       _isSlideBarOpen = false;
     });
   }
+  /// Open drawer
+  void openDrawer2() {
+    setState(() {
+      sliderOpen = SliderOpen.RIGHT_TO_LEFT;
+      _animationController.forward();
+      _slideBarXOffset = widget.sliderMenu2OpenOffset;
+
+      _isSlideBarOpen = true;
+    });
+  }
+
+  /// Close drawer
+  void closeDrawer2() {
+    setState(() {
+      sliderOpen = SliderOpen.RIGHT_TO_LEFT;
+      _animationController.reverse();
+      _slideBarXOffset = widget.sliderMenuCloseOffset;
+
+      _isSlideBarOpen = false;
+    });
+  }
+
 
   @override
   void initState() {
@@ -312,6 +332,26 @@ class SliderMenuCustomState extends State<SliderMenuCustom>
     }
 
     return widget.trailing ?? SizedBox(width: 35,);
+  }
+
+  void rightSwipe() {
+    if (isDrawerOpen) {
+      if(sliderOpen == SliderOpen.RIGHT_TO_LEFT) {
+        closeDrawer2();
+      }
+    } else {
+      openDrawer();
+    }
+  }
+
+  void leftSwipe() {
+    if (isDrawerOpen) {
+      if(sliderOpen == SliderOpen.LEFT_TO_RIGHT) {
+        closeDrawer();
+      }
+    } else if (widget.twoDrawers){
+      openDrawer2();
+    }
   }
 
 }

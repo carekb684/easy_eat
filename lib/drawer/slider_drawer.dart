@@ -34,29 +34,40 @@ class _SlideDrawerState extends State<SlideDrawer> {
           color: Theme.of(context).primaryColorDark,
 
           child: SafeArea(
-            child: SliderMenuCustom(
-              appBarColor: Theme.of(context).primaryColor,
-              key: _key,
-              twoDrawers: titleHeader == "Recipes" ? true : false,
-              sliderMenu2: titleHeader == "Recipes" ? DrawerSearchMenu(key: _drawerSearchkey,) : null,
-              drawerIconColor: Colors.white,
-              appBarPadding: const EdgeInsets.only(top: 10),
-              sliderMenuOpenOffset: 210,
-              sliderMenu2OpenOffset: 280,
-              appBarHeight: 60,
-              title: Text(
-                titleHeader,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+            child: GestureDetector(
+              onHorizontalDragEnd: (details) {
+                if(details.primaryVelocity > 0){
+                  //_key.currentState.toggle(SliderOpen.LEFT_TO_RIGHT);
+                  _key.currentState.rightSwipe();
+                } else if (details.primaryVelocity < 0) {
+                  //_key.currentState.toggle(SliderOpen.RIGHT_TO_LEFT);
+                  _key.currentState.leftSwipe();
+                }
+              },
+              child: SliderMenuCustom(
+                appBarColor: Theme.of(context).primaryColor,
+                key: _key,
+                twoDrawers: titleHeader == "Recipes" ? true : false,
+                sliderMenu2: titleHeader == "Recipes" ? DrawerSearchMenu(key: _drawerSearchkey,) : null,
+                drawerIconColor: Colors.white,
+                appBarPadding: const EdgeInsets.only(top: 10),
+                sliderMenuOpenOffset: 210,
+                sliderMenu2OpenOffset: 280,
+                appBarHeight: 60,
+                title: Text(
+                  titleHeader,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+                ),
+                sliderMenu: DrawerMenuWidget(
+                  onItemClick: (title) {
+                    _key.currentState.closeDrawer();
+                    setState(() {
+                      titleHeader = title;
+                    });
+                  },
+                ),
+                sliderMain: getPageWidget(),
               ),
-              sliderMenu: DrawerMenuWidget(
-                onItemClick: (title) {
-                  _key.currentState.closeDrawer();
-                  setState(() {
-                    titleHeader = title;
-                  });
-                },
-              ),
-              sliderMain: getPageWidget(),
             ),
           ),
 
